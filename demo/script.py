@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
-from rapid_latex_ocr import LatexOCR
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
+from texotic import LatexOCR
 
 image_resizer_path = "models/image_resizer.onnx"
 encoder_path = "models/encoder.onnx"
@@ -14,7 +14,7 @@ model = LatexOCR(
     tokenizer_json=tokenizer_json,
 )
 
-img_path = "tests/test_files/6.png"
+img_path = "test.png"
 with open(img_path, "rb") as f:
     data = f.read()
 
@@ -22,3 +22,5 @@ res, elapse = model(data)
 
 print(res)
 print(elapse)
+
+# TODO: build Streamlit demo app

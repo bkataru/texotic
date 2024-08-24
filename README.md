@@ -1,3 +1,22 @@
+# Texotic
+
+Texotic is a Python library to convert images of equations into LaTeX code based on the ONNXRuntime.
+
+Cythonized fork of RapidLatexOCR. # TODO: finish this
+Modified fork of [RapidLatexOCR](https://github.com/RapidAI/RapidLatexOCR).
+
+- Works completely offline. Models are predownloaded
+- Bug fixes:
+  - Rewrote code using Numba:
+    - TODO: document speed up
+  - Removed usage of deprecated numpy methods
+  - Stronger type checking via up-to-date type hint syntax, removed dependance on the inbuilt typing module
+  - More comprehensive error handling and logging
+  - More documentation and usage examples
+  - Added more options for model inference
+  - Refactored code
+
+
 <div align="center">
 <div align="center">
    <h1><b><i>Rapid ⚡︎ Latex OCR</i></b></h1>

@@ -1,3 +1,5 @@
+TODO: update this as well
+
 ## rapid_latex_ocr
 <p align="left">
     <a href="https://huggingface.co/spaces/SWHL/RapidLatexOCR" target="_blank"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Hugging Face Demo-blue"></a>

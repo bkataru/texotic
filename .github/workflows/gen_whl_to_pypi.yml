@@ -1,10 +1,10 @@
-name: Push rapid_latex_ocr to pypi
+name: Push texotic to pypi
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'rapid_latex_ocr/**'
+      - 'texotic/**'
       - 'docs/doc_whl.md'
       - 'setup.py'
       - '.github/workflows/gen_whl_to_pypi.yml'

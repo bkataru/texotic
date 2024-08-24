@@ -1,0 +1,4 @@
+global-include *.pyx
+include docs/logo.png
+include README.md
+include LICENSE

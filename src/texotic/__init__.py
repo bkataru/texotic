@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
+
 from .main import LatexOCR
 
 __all__ = ["LatexOCR"]

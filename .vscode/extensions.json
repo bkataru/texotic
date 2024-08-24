@@ -1,0 +1,32 @@
+{
+    "recommendations": [
+        "ms-python.black-formatter",
+        "formulahendry.code-runner",
+        "streetsidesoftware.code-spell-checker",
+        "Codeium.codeium",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "donjayamanne.python-environment-manager",
+        "vscode-icons-team.vscode-icons",
+        "almenon.arepl",
+        "njpwerner.autodocstring",
+        "garytyler.darcula-pycharm",
+        "seyyedkhandon.firacode",
+        "codezombiech.gitignore",
+        "oderwat.indent-rainbow",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "VisualStudioExptTeam.vscodeintellicode-completions",
+        "ms-python.isort",
+        "magicstack.MagicPython",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "KevinRose.vsc-python-indent",
+        "njqdev.vscode-python-typehint",
+        "gruntfuggly.todo-tree",
+        "mgesbert.python-path",
+        "shardulm94.trailing-spaces",
+        "stkb.rewrap",
+        "github.vscode-github-actions"
+    ]
+}

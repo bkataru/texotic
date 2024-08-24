@@ -10,7 +10,7 @@ root_dir = cur_dir.parent
 sys.path.append(str(root_dir))
 import pytest
 
-from rapid_latex_ocr import LatexOCR
+from texotic import LatexOCR
 
 image_resizer_path = "models/image_resizer.onnx"
 encoder_path = "models/encoder.onnx"

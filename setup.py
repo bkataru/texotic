@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
 import sys
 from pathlib import Path
 from typing import List
@@ -26,7 +26,9 @@ def get_readme() -> str:
     return readme
 
 
-MODULE_NAME = "rapid_latex_ocr"
+MODULE_NAME = "texotic"
+DESCRIPTION = "Python library to convert images of equations into LaTeX code based on the ONNXRuntime. Cythonized fork of RapidLatexOCR"
+LONG_DESCRIPTION = get_readme()
 
 obtainer = GetPyPiLatestVersion()
 try:
@@ -36,7 +38,6 @@ except ValueError:
 
 VERSION_NUM = obtainer.version_add_one(latest_version)
 
-# 优先提取commit message中的语义化版本号，如无，则自动加1
 if len(sys.argv) > 2:
     match_str = " ".join(sys.argv[2:])
     matched_versions = obtainer.extract_version(match_str)
@@ -44,29 +45,53 @@ if len(sys.argv) > 2:
         VERSION_NUM = matched_versions
 sys.argv = sys.argv[:2]
 
+INSTALL_REQUIRES = read_txt("requirements.txt")
+
 setuptools.setup(
     name=MODULE_NAME,
     version=VERSION_NUM,
-    platforms="Any",
-    description="Tool of converting images of equations into LaTeX code.",
-    long_description=get_readme(),
+    author="bkataru",
+    author_email="<baalateja.k@gmail.com>",
+    description=DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
-    author="SWHL",
-    author_email="liekkaskono@163.com",
-    url="https://github.com/RapidAI/RapidLatexOCR",
-    license="Apache-2.0",
+    platforms="Any",
+    url="https://github.com/bkataru/texotic",
+    download_url="https://github.com/bkataru/texotic",
+    license="MIT",
+    install_requires=INSTALL_REQUIRES,
+    packages=setuptools.find_namespace_packages(where="src"),
+    package_dir={"": "src"},
     include_package_data=True,
-    install_requires=read_txt("requirements.txt"),
-    packages=[MODULE_NAME],
-    package_data={"": ["*.yaml"]},
-    keywords=["ocr, image to text, latex"],
+    keywords=["latex", "image to text", "ocr", "cython", "mathematics"],
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Scientific/Engineering :: Physics",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Cython",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
+        "Framework :: NumPy",
+        "Framework :: OpenCV",
+        "Framework :: Onnx",
+        "Framework :: PyTorch",
+        "Framework :: Tokenizers",
+        "Framework :: Pillow",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
     ],
     python_requires=">=3.6,<3.12",
     entry_points={

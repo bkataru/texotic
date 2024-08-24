@@ -1,22 +1,22 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
 import traceback
 from io import BytesIO
 from pathlib import Path
-from typing import List, Union
 
 import cv2
 import numpy as np
 from onnxruntime import GraphOptimizationLevel, InferenceSession, SessionOptions
 from PIL import Image, UnidentifiedImageError
 
-root_dir = Path(__file__).resolve().parent
-InputType = Union[str, np.ndarray, bytes, Path]
+from exceptions import LoadImageError, ONNXRuntimeError
+
+InputType = str | np.ndarray | bytes | Path
 
 
 class OrtInferSession:
-    def __init__(self, model_path: Union[str, Path], num_threads: int = -1):
+    def __init__(self, model_path: str | Path, num_threads: int = -1):
         self.verify_exist(model_path)
 
         self.num_threads = num_threads
@@ -45,7 +45,7 @@ class OrtInferSession:
 
         self.sess_opt.graph_optimization_level = GraphOptimizationLevel.ORT_ENABLE_ALL
 
-    def __call__(self, input_content: List[np.ndarray]) -> np.ndarray:
+    def __call__(self, input_content: list[np.ndarray]) -> np.ndarray:
         input_dict = dict(zip(self.get_input_names(), input_content))
         try:
             return self.session.run(None, input_dict)
@@ -66,7 +66,7 @@ class OrtInferSession:
         return meta_dict
 
     @staticmethod
-    def verify_exist(model_path: Union[Path, str]):
+    def verify_exist(model_path: str | Path):
         if not isinstance(model_path, Path):
             model_path = Path(model_path)
 
@@ -75,10 +75,6 @@ class OrtInferSession:
 
         if not model_path.is_file():
             raise FileExistsError(f"{model_path} must be a file")
-
-
-class ONNXRuntimeError(Exception):
-    pass
 
 
 class LoadImage:
@@ -90,7 +86,7 @@ class LoadImage:
     def __call__(self, img: InputType) -> np.ndarray:
         if not isinstance(img, InputType.__args__):
             raise LoadImageError(
-                f"The img type {type(img)} does not in {InputType.__args__}"
+                f"The img type {type(img)} does not exist in {InputType.__args__}"
             )
 
         img = self.load_img(img)
@@ -103,7 +99,7 @@ class LoadImage:
             try:
                 img = np.array(Image.open(img))
             except UnidentifiedImageError as e:
-                raise LoadImageError(f"cannot identify image file {img}") from e
+                raise LoadImageError(f"Cannot identify image file {img}") from e
             return img
 
         if isinstance(img, bytes):
@@ -167,10 +163,6 @@ class LoadImage:
         return new_img
 
     @staticmethod
-    def verify_exist(file_path: Union[str, Path]):
+    def verify_exist(file_path: str | Path):
         if not Path(file_path).exists():
             raise LoadImageError(f"{file_path} does not exist.")
-
-
-class LoadImageError(Exception):
-    pass

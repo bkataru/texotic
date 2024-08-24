@@ -1,8 +1,7 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
 from pathlib import Path
-from typing import List, Union
 
 import cv2
 import numpy as np
@@ -12,7 +11,7 @@ from tokenizers.models import BPE
 
 
 class PreProcess:
-    def __init__(self, max_dims: List[int], min_dims: List[int]):
+    def __init__(self, max_dims: list[int], min_dims: list[int]):
         self.max_dims, self.min_dims = max_dims, min_dims
         self.mean = np.array([0.7931, 0.7931, 0.7931]).astype(np.float32)
         self.std = np.array([0.1738, 0.1738, 0.1738]).astype(np.float32)
@@ -47,7 +46,7 @@ class PreProcess:
         a, b, w, h = cv2.boundingRect(coords)  # Find minimum spanning bounding box
         rect = data[b : b + h, a : a + w]
         im = Image.fromarray(rect).convert("L")
-        dims: List[Union[int, int]] = []
+        dims: list[int] = []
         for x in [w, h]:
             div, mod = divmod(x, divable)
             dims.append(divable * (div + (1 if mod > 0 else 0)))
@@ -75,7 +74,7 @@ class PreProcess:
                 img = img.resize(size.astype(int), Image.BILINEAR)
 
         if self.min_dims is not None:
-            padded_size: List[Union[int, int]] = [
+            padded_size: list[int] = [
                 max(img_dim, min_dim)
                 for img_dim, min_dim in zip(img.size, self.min_dims)
             ]
@@ -107,10 +106,10 @@ class PreProcess:
 
 
 class TokenizerCls:
-    def __init__(self, json_file: Union[Path, str]):
+    def __init__(self, json_file: Path | str):
         self.tokenizer = Tokenizer(BPE()).from_file(str(json_file))
 
-    def token2str(self, tokens) -> List[str]:
+    def token2str(self, tokens) -> list[str]:
         if len(tokens.shape) == 1:
             tokens = tokens[None, :]
 

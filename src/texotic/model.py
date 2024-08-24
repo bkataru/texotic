@@ -1,19 +1,18 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
 from pathlib import Path
-from typing import Tuple, Union
 
 import numpy as np
 
-from .utils_load import OrtInferSession
+from utils_load import OrtInferSession
 
 
 class EncoderDecoder:
     def __init__(
         self,
-        encoder_path: Union[Path, str],
-        decoder_path: Union[Path, str],
+        encoder_path: Path | str,
+        decoder_path: Path | str,
         bos_token: int,
         eos_token: int,
         max_seq_len: int,
@@ -39,7 +38,7 @@ class EncoderDecoder:
 
 
 class Decoder:
-    def __init__(self, decoder_path: Union[Path, str]):
+    def __init__(self, decoder_path: Path | str):
         self.max_seq_len = 512
         self.session = OrtInferSession(decoder_path)
 
@@ -120,7 +119,7 @@ class Decoder:
     @staticmethod
     def np_top_k(
         a: np.ndarray, k: int, axis=-1, largest=True, sorted=True
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         if axis is None:
             axis_size = a.size
         else:
@@ -153,7 +152,7 @@ class Decoder:
     @staticmethod
     def multinomial(weights, num_samples, replacement=True):
         weights = np.asarray(weights)
-        weights /= np.sum(weights)  # 确保权重之和为1
+        weights /= np.sum(weights)
         indices = np.arange(len(weights))
         samples = np.random.choice(
             indices, size=num_samples, replace=replacement, p=weights

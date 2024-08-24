@@ -1,33 +1,70 @@
 # -*- encoding: utf-8 -*-
-# @Author: SWHL
-# @Contact: liekkaskono@163.com
+# @Author: bkataru
+# @Contact: baalateja.k@gmail.com
 import argparse
 import re
 import time
 import traceback
+import warnings
 from pathlib import Path
-from typing import Tuple, Union
 
 import numpy as np
 import yaml
 from PIL import Image
 
-from .models import EncoderDecoder
-from .utils import PreProcess, TokenizerCls
-from .utils_load import InputType, LoadImage, LoadImageError, OrtInferSession
+from model import EncoderDecoder
+from utils import PreProcess, TokenizerCls
+from utils_load import InputType, LoadImage, OrtInferSession
+from exceptions import LoadImageError
 
 cur_dir = Path(__file__).resolve().parent
-DEFAULT_CONFIG = cur_dir / "config.yaml"
+
+DEFAULT_CONFIG = cur_dir / "configs" / "default.yaml"
+DEFAULT_IMAGE_RESIZER = cur_dir / "models" / "image_resizer.onnx"
+DEFAULT_ENCODER = cur_dir / "models" / "encoder.onnx"
+DEFAULT_DECODER = cur_dir / "models" / "decoder.onnx"
+DEFAULT_TOKENIZER = cur_dir / "models" / "tokenizer.json"
+
+if not Path(DEFAULT_CONFIG).is_file():
+    warnings.warn(
+        f"Unable to find the default config file at {DEFAULT_CONFIG}. Does it exist? Please specify a config.yml file for config_path=",
+        UserWarning,
+    )
+
+if not Path(DEFAULT_IMAGE_RESIZER).is_file():
+    warnings.warn(
+        f"Unable to find the default Image Resizer model at {DEFAULT_IMAGE_RESIZER}. Does it exist? Please specify an image_resizer.onnx file for image_resizer_path=",
+        UserWarning,
+    )
+
+if not Path(DEFAULT_ENCODER).is_file():
+    warnings.warn(
+        f"Unable to find the default Encoder model at {DEFAULT_ENCODER}. Does it exist? Please specify an encoder.onnx file for encoder_path=",
+        UserWarning,
+    )
+
+if not Path(DEFAULT_DECODER).is_file():
+    warnings.warn(
+        f"Unable to find the default Decoder model at {DEFAULT_DECODER}. Does it exist? Please specify an decoder.onnx file for decoder_path=",
+        UserWarning,
+    )
+
+
+if not Path(DEFAULT_TOKENIZER).is_file():
+    warnings.warn(
+        f"Unable to find the default Tokenizer config at {DEFAULT_TOKENIZER}. Does it exist? Please specify a tokenizer.json file for tokenizer_json=",
+        UserWarning,
+    )
 
 
 class LatexOCR:
-    def __init__(
+    def __init__(  # TODO: document all of these
         self,
-        config_path: Union[str, Path] = DEFAULT_CONFIG,
-        image_resizer_path: Union[str, Path] = None,
-        encoder_path: Union[str, Path] = None,
-        decoder_path: Union[str, Path] = None,
-        tokenizer_json: Union[str, Path] = None,
+        config_path: str | Path | None = DEFAULT_CONFIG,
+        image_resizer_path: str | Path | None = DEFAULT_IMAGE_RESIZER,
+        encoder_path: str | Path | None = DEFAULT_ENCODER,
+        decoder_path: str | Path | None = DEFAULT_DECODER,
+        tokenizer_json: str | Path | None = DEFAULT_TOKENIZER,
     ):
         if image_resizer_path is None:
             raise FileNotFoundError("image_resizer_path must not be None.")
@@ -63,7 +100,7 @@ class LatexOCR:
         )
         self.tokenizer = TokenizerCls(tokenizer_json)
 
-    def __call__(self, img: InputType) -> Tuple[str, float]:
+    def __call__(self, img: InputType) -> tuple[str, float]:
         s = time.perf_counter()
 
         try:
@@ -71,23 +108,23 @@ class LatexOCR:
         except LoadImageError as exc:
             error_info = traceback.format_exc()
             raise LoadImageError(
-                f"Load the img meets error. Error info is {error_info}"
+                f"Error loading the image. Error info is {error_info}"
             ) from exc
 
         try:
-            resizered_img = self.loop_image_resizer(img)
+            resized_img = self.loop_image_resizer(img)
         except Exception as e:
             error_info = traceback.format_exc()
             raise ValueError(
-                f"image resizer meets error. Error info is {error_info}"
+                f"Error resizing the image. Error info is {error_info}"
             ) from e
 
         try:
-            dec = self.encoder_decoder(resizered_img, temperature=self.temperature)
+            dec = self.encoder_decoder(resized_img, temperature=self.temperature)
         except Exception as e:
             error_info = traceback.format_exc()
             raise ValueError(
-                f"EncoderDecoder meets error. Error info is {error_info}"
+                f"Error encoding/decoding the image. Error info is {error_info}"
             ) from e
 
         decode = self.tokenizer.token2str(dec)
@@ -107,7 +144,8 @@ class LatexOCR:
 
             resizer_res = self.image_resizer([final_img.astype(np.float32)])[0]
 
-            argmax_idx = int(np.argmax(resizer_res, axis=-1))
+            argmax_idx = int(np.argmax(resizer_res, axis=-1)[0])
+
             w = (argmax_idx + 1) * 32
             if w == pad_img.size[0]:
                 break
@@ -117,7 +155,7 @@ class LatexOCR:
 
     def pre_process(
         self, input_image: Image.Image, r, w, h
-    ) -> Tuple[np.ndarray, Image.Image]:
+    ) -> tuple[np.ndarray, Image.Image]:
         if r > 1:
             resize_func = Image.Resampling.BILINEAR
         else:
@@ -160,12 +198,16 @@ class LatexOCR:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-img_resizer", "--image_resizer_path", type=str, default=None)
-    parser.add_argument("-encdoer", "--encoder_path", type=str, default=None)
-    parser.add_argument("-decoder", "--decoder_path", type=str, default=None)
-    parser.add_argument("-tokenizer", "--tokenizer_json", type=str, default=None)
+    parser.add_argument(
+        "-img_resizer", "--image_resizer_path", type=str, default=DEFAULT_IMAGE_RESIZER
+    )
+    parser.add_argument("-encdoer", "--encoder_path", type=str, default=DEFAULT_ENCODER)
+    parser.add_argument("-decoder", "--decoder_path", type=str, default=DEFAULT_DECODER)
+    parser.add_argument(
+        "-tokenizer", "--tokenizer_json", type=str, default=DEFAULT_TOKENIZER
+    )
     parser.add_argument("img_path", type=str, help="Only img path of the formula.")
-    args = parser.parse_args()
+    args = parser.parse_args()  # TODO: document all of these
 
     engine = LatexOCR(
         image_resizer_path=args.image_resizer_path,
